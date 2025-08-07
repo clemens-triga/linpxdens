@@ -11,10 +11,10 @@ Provides functionality to:
 
 import cv2
 import numpy as np
-from utils import _as_array_safe, _check_shape, _check_ndim, _check_min_length
-import line_spacing_analyzer as lspa
-import line_structure_analyzer as lstra
-from line_collection import LineCollection
+from .utils import _as_array_safe, _check_shape, _check_ndim, _check_min_length
+from . import line_spacing_analyzer as lspa
+from . import line_structure_analyzer as lstra
+from .line_collection import LineCollection
 
 
 def _validate_image_path(image_path, name="image_path"):

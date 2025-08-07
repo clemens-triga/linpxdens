@@ -21,8 +21,8 @@ import numpy as np
 import matplotlib.pyplot as plt
 from matplotlib.lines import Line2D
 from matplotlib.widgets import RectangleSelector
-from core.line_collection import LineCollection
-import core as dac
+from linpxdens.core.line_collection import LineCollection
+import linpxdens.core as core
 
 
 def ask(prompt, default=True):
@@ -199,7 +199,7 @@ def _collect_lines(image, lines):
             fig_selector = selector.ax.figure
             ax_selector = selector.ax
         roi = _select_roi(selector, event_dict)
-        fitted_line = dac.fit_line(image, roi)
+        fitted_line = core.fit_line(image, roi)
         _add_line_to_plot(ax_selector, fitted_line, image_shape)
         if _confirm_fit_acceptance():
             lines.insert_line(fitted_line)
@@ -262,7 +262,7 @@ def analyze(image_path):
     :param image_path: Path to the image file.
     :return: Tuple (mean, std, distances) of line spacing.
     """
-    image_path = dac._validate_image_path(image_path)
+    image_path = core._validate_image_path(image_path)
     return _analyze(image_path)
 
 
@@ -273,13 +273,13 @@ def _analyze(image_path):
     :param image_path: Path to validated image.
     :return: Tuple (mean, std, distances).
     """
-    image = dac._load_image(image_path)
+    image = core._load_image(image_path)
     lines = LineCollection()
     _collect_lines(image, lines)
     slope = lines.mean_slope
     centers = lines.centers
     _plot_fit_results(image, centers, slope)
-    mean, std, distances = dac.get_mean_distance(lines)
+    mean, std, distances = core.get_mean_distance(lines)
     _plot_distance_distribution(mean, std, distances)
     plt.show()
     return mean, std, distances

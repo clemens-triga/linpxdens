@@ -2,4 +2,4 @@
 from importlib.metadata import version
 __version__ = version("linpxdens")
 
-from linpxdens.gui import analyze
+from .gui import analyze
