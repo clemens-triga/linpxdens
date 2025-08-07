@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "linpxdens"
-version = "0.0.0"
+version = "0.0.1"
 description = "linpxdens (Linear pixel density) is a Python package for analyzing geometric line structures and spacing patterns in images. It provides tools for line fitting, center estimation, outlier filtering, and periodic pattern analysis based on image data. From the periodic structure, the linear pixel density is calculated."
 authors = ["Clemens Trunner"]
 license = "MIT"
