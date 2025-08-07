@@ -2,7 +2,7 @@
 
 <!--next-version-placeholder-->
 
-## v0.1.0 (24/08/2024)
+## v0.0.1 (24/08/2024)
 
 - Fixed bugs on importing packages.
 
