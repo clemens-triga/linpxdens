@@ -9,13 +9,13 @@ import cv2
 import numpy as np
 from utils import _as_array_safe, _check_shape, _check_ndim, _check_min_length
 
-COL = 'column'
-ROW = 'row'
-INTENSITY = 'intensity'
-PIXELS_ARRAY_DTYPE = [(COL, int), (ROW, int), (INTENSITY, float)]
-ALLOWED_METHODS = ("mean", "median")
-DEFAULT_METHOD = ALLOWED_METHODS[0]
-DEFAULT_FILTER_LEVEL = 2
+_COL = 'column'
+_ROW = 'row'
+_INTENSITY = 'intensity'
+_PIXELS_ARRAY_DTYPE = [(_COL, int), (_ROW, int), (_INTENSITY, float)]
+_ALLOWED_METHODS = ("mean", "median")
+_DEFAULT_METHOD = _ALLOWED_METHODS[0]
+_DEFAULT_FILTER_LEVEL = 2
 
 def _validate_image(image, name="image"):
     """
@@ -23,10 +23,10 @@ def _validate_image(image, name="image"):
 
     :param image: Input image array.
     :param name: Name used for error messages.
-    :return: Validated numpy structured array with PIXELS_ARRAY_DTYPE.
+    :return: Validated numpy structured array with _PIXELS_ARRAY_DTYPE.
     :raises ValueError: If the image is empty.
     """
-    image = _as_array_safe(image, name, dtype=PIXELS_ARRAY_DTYPE)
+    image = _as_array_safe(image, name, dtype=_PIXELS_ARRAY_DTYPE)
     if image.size == 0:
         raise ValueError(f"{name} must not be empty.")
     return image
@@ -53,8 +53,8 @@ def _validate_method(method, name="method"):
     :return: Valid method string.
     :raises ValueError: If method not in allowed methods.
     """
-    if method not in ALLOWED_METHODS:
-        raise ValueError(f"Invalid {name}. Choose from {ALLOWED_METHODS}.")
+    if method not in _ALLOWED_METHODS:
+        raise ValueError(f"Invalid {name}. Choose from {_ALLOWED_METHODS}.")
     return method
 
 def _validate_filter_level(filter_level, name="filter_level"):
@@ -79,9 +79,9 @@ def _validate_pixel(pixels, name="pixels"):
     :return: Validated pixels array.
     :raises ValueError: If pixels length < 2 or all intensities zero.
     """
-    pixels = _as_array_safe(pixels, name, dtype=PIXELS_ARRAY_DTYPE)
+    pixels = _as_array_safe(pixels, name, dtype=_PIXELS_ARRAY_DTYPE)
     _check_min_length(pixels, 2, name)
-    if np.all(pixels[INTENSITY] == 0):
+    if np.all(pixels[_INTENSITY] == 0):
         raise ValueError(f"Cannot compute center: all weights in {name} are zero.")
     return pixels
 
@@ -145,9 +145,9 @@ def _locate_column_extrema(image):
     :param image: Structured image array.
     :return: Structured array of extrema pixels per column.
     """
-    extrema = np.zeros(image.shape[1], dtype=PIXELS_ARRAY_DTYPE)
+    extrema = np.zeros(image.shape[1], dtype=_PIXELS_ARRAY_DTYPE)
     for x, column in enumerate(image.T):
-        y, value = _detect_extremum(column[INTENSITY])
+        y, value = _detect_extremum(column[_INTENSITY])
         extrema[x] = (x, y, value)
     return extrema
 
@@ -158,9 +158,9 @@ def _locate_row_extrema(image):
     :param image: Structured image array.
     :return: Structured array of extrema pixels per row.
     """
-    extrema = np.zeros(image.shape[0], dtype=PIXELS_ARRAY_DTYPE)
+    extrema = np.zeros(image.shape[0], dtype=_PIXELS_ARRAY_DTYPE)
     for y, row in enumerate(image):
-        x, value = _detect_extremum(row[INTENSITY])
+        x, value = _detect_extremum(row[_INTENSITY])
         extrema[y] = (x, y, value)
     return extrema
 
@@ -184,12 +184,12 @@ def _get_data_pixels_from_image(image):
     column_extrema = _locate_column_extrema(image)
     row_extrema = _locate_row_extrema(image)
     intersection_pixels = (np.intersect1d(row_extrema, column_extrema))
-    row_filtered = row_extrema[np.isin(row_extrema[COL], intersection_pixels[COL])]
-    column_filtered = column_extrema[np.isin(column_extrema[ROW], intersection_pixels[ROW])]
+    row_filtered = row_extrema[np.isin(row_extrema[_COL], intersection_pixels[_COL])]
+    column_filtered = column_extrema[np.isin(column_extrema[_ROW], intersection_pixels[_ROW])]
     data_pixels = np.unique(np.concatenate((row_filtered, column_filtered)), axis=0)
     return data_pixels
 
-def filter_pixel_outliers(pixels, method=DEFAULT_METHOD, filter_level=DEFAULT_FILTER_LEVEL):
+def filter_pixel_outliers(pixels, method=_DEFAULT_METHOD, filter_level=_DEFAULT_FILTER_LEVEL):
     """
     Filter pixel intensity outliers using mean or median method.
 
@@ -212,7 +212,7 @@ def _filter_pixel_outliers(pixels, method, filter_level):
     :param filter_level: Filtering level.
     :return: Filtered pixels array.
     """
-    values = pixels[INTENSITY]
+    values = pixels[_INTENSITY]
     if method == "mean":
         center = np.mean(values)
         tolerance = np.std(values)
@@ -240,7 +240,7 @@ def _fit_line_to_pixels(pixels):
     :param pixels: Pixels array.
     :return: (slope, intercept) tuple.
     """
-    return np.polyfit(pixels[COL], pixels[ROW], 1)
+    return np.polyfit(pixels[_COL], pixels[_ROW], 1)
 
 def compute_weighted_center(pixels):
     """
@@ -259,12 +259,12 @@ def _compute_weighted_center(pixels):
     :param pixels: Pixels array.
     :return: Array with weighted center coordinates.
     """
-    weights = pixels[INTENSITY]
-    x_center = np.sum(pixels[COL] * weights) / np.sum(weights)
-    y_center = np.sum(pixels[ROW] * weights) / np.sum(weights)
+    weights = pixels[_INTENSITY]
+    x_center = np.sum(pixels[_COL] * weights) / np.sum(weights)
+    y_center = np.sum(pixels[_ROW] * weights) / np.sum(weights)
     return np.array([x_center, y_center])
 
-def analyze_image_geometry(image, roi=None, method=DEFAULT_METHOD, filter_level=DEFAULT_FILTER_LEVEL):
+def analyze_image_geometry(image, roi=None, method=_DEFAULT_METHOD, filter_level=_DEFAULT_FILTER_LEVEL):
     """
     Analyze image geometry to fit line and compute center within optional ROI.
 

@@ -17,20 +17,13 @@ class LineCollection():
     - slope (float): slope of the line.
     - intercept (float): y-intercept of the line.
     - center (2-float tuple): center point (x, y) on the line.
-
-    Attributes:
-        ID (str): Field name for line ID.
-        SLOPE (str): Field name for slope.
-        INTERCEPT (str): Field name for intercept.
-        CENTER (str): Field name for center coordinates.
-        DTYPE (np.dtype): NumPy dtype describing the structured array format.
     """
 
-    ID = 'id'
-    SLOPE = 'slope'
-    INTERCEPT = 'intercept'
-    CENTER = 'center'
-    DTYPE = np.dtype([(ID, 'U4'), (SLOPE, 'float'), (INTERCEPT, 'float'), (CENTER, '2f4')])
+    _ID = 'id'
+    _SLOPE = 'slope'
+    _INTERCEPT = 'intercept'
+    _CENTER = 'center'
+    _DTYPE = np.dtype([(_ID, 'U4'), (_SLOPE, 'float'), (_INTERCEPT, 'float'), (_CENTER, '2f4')])
 
     def __init__(self):
         """
@@ -77,7 +70,7 @@ class LineCollection():
         :param input: numpy structured array to validate.
         :raises TypeError: If dtype mismatch.
         """
-        expected_dtype = np.dtype(self.DTYPE.descr[1:])
+        expected_dtype = np.dtype(self._DTYPE.descr[1:])
         if input.dtype != expected_dtype:
             raise TypeError(f"Expected dtype (except id) {expected_dtype}, got {input.dtype}")
 
@@ -93,11 +86,11 @@ class LineCollection():
         if isinstance(line, tuple):
             self._check_tuple(line)
             full_line = (new_id,) + line
-            struct_line = np.array(full_line, dtype=self.DTYPE)
+            struct_line = np.array(full_line, dtype=self._DTYPE)
         elif isinstance(line, np.ndarray):
             self._check_struc_array(line)
-            struct_line = np.empty((), dtype=self.DTYPE)  # 0-dim scalar
-            struct_line[self.ID] = new_id
+            struct_line = np.empty((), dtype=self._DTYPE)  # 0-dim scalar
+            struct_line[self._ID] = new_id
             for name in line.dtype.names:
                 struct_line[name] = line[name]
         else:
@@ -114,7 +107,7 @@ class LineCollection():
         :raises KeyError: If no line with given ID exists.
         """
         for i, line in enumerate(self._lines):
-            if line[self.ID] == line_id:
+            if line[self._ID] == line_id:
                 del self._lines[i]
                 return True
         raise KeyError(f"Line with id {line_id} not found.")
@@ -125,7 +118,7 @@ class LineCollection():
 
         :return: Unique ID string.
         """
-        existing_ids = [line[self.ID] for line in self._lines]
+        existing_ids = [line[self._ID] for line in self._lines]
         while True:
             new_id = f"{random.randint(0, 9999):04d}"
             if new_id not in existing_ids:
@@ -139,9 +132,9 @@ class LineCollection():
         :return: NumPy array of the column values.
         :raises KeyError: If field name does not exist.
         """
-        if not name in self.DTYPE.fields:
+        if not name in self._DTYPE.fields:
             raise KeyError(f"Field {name} not found in dtype")
-        dtype_base = self.DTYPE.fields[name][0].base
+        dtype_base = self._DTYPE.fields[name][0].base
         return np.array([line[name] for line in self._lines], dtype=dtype_base)
 
     @property
@@ -151,7 +144,7 @@ class LineCollection():
 
         :return: Array of string IDs.
         """
-        return self._get_column(self.ID)
+        return self._get_column(self._ID)
 
     @property
     def slopes(self):
@@ -160,7 +153,7 @@ class LineCollection():
 
         :return: Array of floats.
         """
-        return self._get_column(self.SLOPE)
+        return self._get_column(self._SLOPE)
 
     @property
     def intercepts(self):
@@ -169,7 +162,7 @@ class LineCollection():
 
         :return: Array of floats.
         """
-        return self._get_column(self.INTERCEPT)
+        return self._get_column(self._INTERCEPT)
 
     @property
     def centers(self):
@@ -178,7 +171,7 @@ class LineCollection():
 
         :return: Array of 2-element float tuples.
         """
-        return self._get_column(self.CENTER)
+        return self._get_column(self._CENTER)
 
     @property
     def lines(self):
@@ -207,8 +200,8 @@ class LineCollection():
         :raises KeyError: If no line with the given ID exists.
         """
         for line in self._lines:
-            if line[self.ID] == id:
-                dtype_no_id = np.dtype(self.DTYPE.descr[1:])
+            if line[self._ID] == id:
+                dtype_no_id = np.dtype(self._DTYPE.descr[1:])
                 values = tuple(line[field] for field in dtype_no_id.names)
                 return np.array(values, dtype=dtype_no_id)
         raise KeyError(f"Line with id {id} not found.")
