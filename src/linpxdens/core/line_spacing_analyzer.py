@@ -1,5 +1,5 @@
 import numpy as np
-from utils import _as_array_safe, _check_shape, _check_ndim, _check_min_length
+from .utils import _as_array_safe, _check_shape, _check_ndim, _check_min_length
 
 def _validate_direction_vector(direction_vector, name="direction_vector"):
     """

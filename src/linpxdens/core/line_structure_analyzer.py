@@ -7,7 +7,7 @@ and computing weighted centers from images or pixel data.
 
 import cv2
 import numpy as np
-from utils import _as_array_safe, _check_shape, _check_ndim, _check_min_length
+from .utils import _as_array_safe, _check_shape, _check_ndim, _check_min_length
 
 _COL = 'column'
 _ROW = 'row'
