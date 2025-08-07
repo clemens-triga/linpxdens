@@ -21,7 +21,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 from matplotlib.lines import Line2D
 from matplotlib.widgets import RectangleSelector
-from line_collection import LineCollection
+from core.line_collection import LineCollection
 import core as dac
 
 
