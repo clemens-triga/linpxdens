@@ -1,5 +1,14 @@
 # read version from installed package
-from importlib.metadata import version
-__version__ = version("linpxdens")
+#from importlib.metadata import version
 
-from .gui import analyze
+
+
+from .interactive.session import analyze as analyze
+from .core.analysis import analyze as core_analyze
+
+#__version__ = version("linpxdens")
+
+__all__ = [
+    "analyze",
+    "core_analyze",
+]
