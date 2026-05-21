@@ -37,18 +37,20 @@ def figure_exists(fig):
     return plt.fignum_exists(fig.number)
 
 
-def show_figure(fig=None):
+def show_figure(figure=None, **kwargs):
     """
     Display a matplotlib figure.
 
     If a figure is provided, it is activated before showing.
 
-    :param fig: Optional matplotlib figure to display.
-    :type fig: matplotlib.figure.Figure | None
+    :param figure: Optional matplotlib figure to display.
+    :type figure: matplotlib.figure.Figure | None
+    :param kwargs: Additional keyword arguments passed to plt.show()
     """
-    if fig is not None:
-        plt.figure(fig.number)
-    plt.show()
+    if figure is not None:
+        plt.figure(figure.number)
+
+    plt.show(**kwargs)
 
 
 def close_figure(fig):
@@ -59,6 +61,10 @@ def close_figure(fig):
     :type fig: matplotlib.figure.Figure
     """
     plt.close(fig)
+
+def wait(time):
+    plt.pause(time)
+    
 
 
 def add_line(ax, line_data):

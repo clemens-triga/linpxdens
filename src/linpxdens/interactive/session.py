@@ -22,7 +22,7 @@ Workflow overview:
 
 import numpy as np
 
-import core
+from .. import core
 from . import plotting as plot
 from . import roi_selection as roi
 from . import dialog as dia
@@ -64,7 +64,7 @@ def collect_lines(image):
         if fig is None or not plot.figure_exists(fig):
             fig, ax = roi.create_view(image)
             selector, event_dict = roi.attach_selector(ax)
-
+        plot.show_figure(fig, block = False)
         new_roi = roi.select(fig, selector, event_dict)
         if new_roi is False:
             plot.close_figure(fig)

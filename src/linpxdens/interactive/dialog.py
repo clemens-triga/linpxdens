@@ -6,6 +6,7 @@ widgets. It is used to control interactive steps in the analysis pipeline,
 such as ROI confirmation and validation of fitted results.
 """
 
+import sys
 from matplotlib.widgets import Button
 from . import plotting as plot
 from . import dialog as dia
@@ -34,7 +35,7 @@ def ask_confirmation(fig, question, true_label, false_label):
 
     fig.subplots_adjust(bottom=0.25)
 
-    def yes(event):
+    def on_confirm(event):
         """
         Handle confirmation button click.
 
@@ -43,16 +44,25 @@ def ask_confirmation(fig, question, true_label, false_label):
         result["value"] = True
         fig.canvas.stop_event_loop()
 
-    def no(event):
+    def on_reject(event):
         """
-        Handle rejection button click or figure close event.
+        Handle rejection button click.
 
         :param event: Matplotlib button click or close event.
         """
         result["value"] = False
         fig.canvas.stop_event_loop()
 
-    fig.canvas.mpl_connect("close_event", no)
+    def on_close(event):
+        """
+        Handle figure close event.
+
+        :param event: Matplotlib button click or close event.
+        """
+        plot.close_figure(fig)
+        sys.exit(0)
+
+    fig.canvas.mpl_connect("close_event", on_close)
 
     txt_question = fig.text(
         0.5, 0.16,
@@ -68,17 +78,30 @@ def ask_confirmation(fig, question, true_label, false_label):
     btn_yes = Button(ax_yes, true_label)
     btn_no = Button(ax_no, false_label)
 
-    cid_yes = btn_yes.on_clicked(yes)
-    cid_no = btn_no.on_clicked(no)
+    cid_yes = btn_yes.on_clicked(on_confirm)
+    cid_no = btn_no.on_clicked(on_reject)
 
-    fig.show()
+    close_cid = fig.canvas.mpl_connect("close_event", on_close)
+
+    #plot.show_figure(fig, block=False)
+    fig.canvas.draw_idle()
     fig.canvas.start_event_loop(timeout=-1)
 
-    if plot.figure_exists(fig):
-        ax_yes.remove()
-        ax_no.remove()
-        txt_question.remove()
-        fig.canvas.draw_idle()
+    #while result["value"] is None:
+    #    plot.wait(0.05)
+
+    # disconnect callbacks first
+    fig.canvas.mpl_disconnect(close_cid)
+    btn_yes.disconnect(cid_yes)
+    btn_no.disconnect(cid_no)
+
+    # remove artists/widgets
+    ax_yes.remove()
+    ax_no.remove()
+    txt_question.remove()
+
+    # redraw
+    #fig.canvas.draw_idle()
 
     return result["value"]
 
