@@ -2,7 +2,7 @@
 
 <!--next-version-placeholder-->
 
-## v1.0.0 (20/05/2026)
+## v1.0.0 (21/05/2026)
 
 - Fixed bugs on importing modules.
 - Implemented CLI.

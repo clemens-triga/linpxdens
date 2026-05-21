@@ -10,7 +10,9 @@ $ pip install linpxdens
 
 ## Usage
 
-- TODO
+```bash
+$ linpxdens <image_path>
+```
 
 ## Contributing
 
